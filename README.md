@@ -16,7 +16,7 @@
   <script src='uniqueness.js' type='text/javascript'></script>
   <script type='text/javascript'>
   $(document).ready(function() {
-    var monitor = uniqueness({
+    const monitor = uniqueness({
       identifier: '.uniqueness',
       effect: 'fade',
       effect_duration: 1
@@ -45,11 +45,11 @@ this.options = {
 ```
 
 ## How to:
-Typically the script will start by hiding all elements except the first one. To change that we can use the option start_with and give it the index number that we want it to start from instead. An other option is to use local_url option which will allow you start from the index number passed to the url with hash tag and 'unique' like such: `http://localhost/#unique2`. 2 is the index we want to start with. And don't forget to pass local_url: 'true' in options, for this to work.
+Typically the script will start by hiding all elements except the first one. To change that we can use the option start_with and give it the index number that we want it to start from instead. An other option is to use local_url option which will allow you start from the index number passed to the URL with hash tag and 'unique' like such: `http://localhost/#unique2`. 2 is the index we want to start with. And don't forget to pass local_url: 'true' in options, for this to work.
 
 ## Useful functions :
 To use any of the following functions, you have to get an instance of the constructor, which we did in the Setup section : </br>
-` var monitor = uniqueness()` </br>
+` const monitor = uniqueness()` </br>
 ` monitor.following_functions()`
 
 ##### - Monitor elements:
