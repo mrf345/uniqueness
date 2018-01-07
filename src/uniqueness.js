@@ -1,4 +1,4 @@
-/* global $, location */ // varible arguement to avoid false linter
+/* global $ */ // varible arguement to avoid false linter
 /*
 Script : uniqueness 0.1 beta
 Author : Mohamed Feddad
@@ -7,46 +7,45 @@ Source : https://github.com/mrf345/uniqueness
 License: MPL 2.0
 Dependencies : jQuery, jQuery UI (optional)
 Today's lesson: organizing is time consuming for now, and time saving for later
+
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 */
 
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+const uniqueness = function Unique (options) {
 
-// Custome pythonic functions to make me feel like home
-var checkType = function checkType (type, args) {
-  // checking the type of each varible in the passed array
-  for (var a in args) {
-    if (typeof args[a] !== type) return false
+  // pythonic functions to make me feel like home
+  const checkType = function checkType (type, args) {
+    // checking the type of each varible in the passed array
+    for (let a in args) {
+      if (typeof args[a] !== type) return false
+    }
+    return true
   }
-  return true
-}
+  const randint = function randint (digits) {
+  // to generate a random int of certain range, it takes the length of
+  // the randint as an arguement
+    if (!checkType('number')) throw new TypeError('randint() requires numbers')
+    return Math.floor(Math.random() * (10 ** digits))
+  }
+  const choice = function choice (list) {
+  // to chose randomly from an Array
+    if (!(list instanceof Array)) throw new TypeError('choice() taskes only Arrays')
+    if (list.length <= 0) throw new Error('choice() requires pupliated Array')
+    let powerOfLength = Math.floor(list.length / 10)
+    if (powerOfLength <= 0) powerOfLength = 1
+    return list[Math.floor(Math.random() * (10 * powerOfLength))]
+  }
+  const effects = [
+    // jquery ui effects
+    'blind', 'bounce', 'clip',
+    'drop', 'explode', 'fade',
+    'fold', 'highlight', 'puff',
+    'pulsate', 'scale', 'shake',
+    'size', 'slide']
 
-var randint = function randint (digits) {
-// to generate a random int of certain range, it takes the length of
-// the randint as an arguement
-  if (!checkType('number')) throw new TypeError('randint() requires numbers')
-  return Math.floor(Math.random() * (10 ** digits))
-}
-
-var choice = function choice (list) {
-// to chose randomly from an Array
-  if (!(list instanceof Array)) throw new TypeError('choice() taskes only Arrays')
-  if (list.length <= 0) throw new Error('choice() requires pupliated Array')
-  var powerOfLength = Math.floor(list.length / 10)
-  if (powerOfLength <= 0) powerOfLength = 1
-  return list[Math.floor(Math.random() * (10 * powerOfLength))]
-}
-
-// jquery ui effects
-var effects = [
-  'blind', 'bounce', 'clip',
-  'drop', 'explode', 'fade',
-  'fold', 'highlight', 'puff',
-  'pulsate', 'scale', 'shake',
-  'size', 'slide']
-
-var uniqueness = function Unique (options) {
   // main class that contains all functions
   if (!window.jQuery) throw new Error('This script depends fully on jquery, go get it') // check for jquery
   if (typeof options !== 'object') options = {}
@@ -69,8 +68,7 @@ var uniqueness = function Unique (options) {
     // check for jquery ui and its effects, if use effects
     if (this.options.use_effects === 'true' && !$.ui) throw new Error('Effects depends on Jquery ui, go get it. or do not use effects !')
     // check types
-    var bol, b  // pure booleans does not function with ||
-    for (b in bol = [
+    let bol; for (let b in bol = [
       this.options.use_effects,
       this.options.local_url]) {
       if (bol[b] !== 'true' && bol[b] !== 'false') throw new TypeError("unique(options) require 'true' or 'false'")
@@ -94,13 +92,12 @@ var uniqueness = function Unique (options) {
 
   this.effect = function effect (effect, duration, index, doe = true) {
     // to applay the effect and toggle the element
-    var thefd = this.options.identifier + ':eq(' + index + ')'
     if (effects.indexOf(effect) === -1) {
       throw new Error('effect(effect) taskes a valid jquery ui effect')
     } else {
       if (this.options.use_effects === 'true' && doe) {
-        $(thefd).stop().toggle(effect, {}, duration)
-      } else $(thefd).stop().toggle()
+        $(this.options.identifier + ':eq(' + index + ')').stop().toggle(effect, {}, duration)
+      } else $(this.options.identifier + ':eq(' + index + ')').stop().toggle()
     }
   }
 
@@ -151,8 +148,7 @@ var uniqueness = function Unique (options) {
 
   this.localUrl = function localUrl () {
     // spliting the href looking for our index and magic word unique
-    var url = location.href
-    url = url.split('#')
+    let url = window.location.href.split('#')
     if (url.length < 2) {
       return false
     } else { // it contains #

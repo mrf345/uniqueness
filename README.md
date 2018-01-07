@@ -1,4 +1,4 @@
-# uniqueness 0.1 beta
+# uniqueness (Beta)
 ### [jQuery][fd4a5c2f] based script to help monitor, show and hide multiple one-page elements at once
 
   [fd4a5c2f]: https://jquery.com "jQuery website"
