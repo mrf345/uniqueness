@@ -40,7 +40,8 @@ this.options = {
   use_effects: options.use_effects || 'true', // to use transitional jquery UI effects
   effect: options.effect || choice(effects), // to get or set a random effect
   effect_duration: options.effect_duration * 1000 || randint(3), // effect duration in seconds. default random
-  local_url: options.local_url || 'false' // to goto() via parsing index varible from url
+  local_url: options.local_url || 'false', // to goto() via parsing index varible from url
+  always_hash: options.always_hash || 'false' // to always display the current element id in hash url
 }
 ```
 

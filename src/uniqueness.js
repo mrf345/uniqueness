@@ -47,7 +47,7 @@ var uniqueness = function Unique (options, callback=function () {}) {
     effect: options.effect || choice(effects), // to get or set a random effect
     effect_duration: options.effect_duration * 1000 || randint(3), // effect duration in seconds. default random
     local_url: options.local_url || 'false', // to goto() via parsing index variable from url
-    always_hash: options.always_hash || 'false', // to always display the current element id in url
+    always_hash: options.always_hash || 'false' // to always display the current element id in hash url
   }
   this.turn = 0 // currently shown element
   this.s_length = $(this.options.identifier).length // length of the selected elements
@@ -61,6 +61,7 @@ var uniqueness = function Unique (options, callback=function () {}) {
     // check types
     var bol; for (var b in bol = [
       this.options.use_effects,
+      this.options.always_hash,
       this.options.local_url]) {
       if (bol[b] !== 'true' && bol[b] !== 'false') throw new TypeError("unique(options) require 'true' or 'false'")
     }
