@@ -1,44 +1,34 @@
 /* global $ */ // varible arguement to avoid false linter
 /*
-Script : uniqueness 0.1 beta
-Author : Mohamed Feddad
-Date : 2017/12/10
-Source : https://github.com/mrf345/uniqueness
-License: MPL 2.0
-Dependencies : jQuery, jQuery UI (optional)
-Today's lesson: organizing is time consuming for now, and time saving for later
-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 */
 
-const uniqueness = function Unique (options) {
-
-  // pythonic functions to make me feel like home
-  const checkType = function checkType (type, args) {
-    // checking the type of each varible in the passed array
-    for (let a in args) {
+var uniqueness = function Unique (options, callback=function () {}) {
+  var checkType = function checkType (type, args) {
+    // checking the type of each variable in the passed array
+    for (var a in args) {
       if (typeof args[a] !== type) return false
     }
     return true
   }
-  const randint = function randint (digits) {
+  var randint = function randint (digits) {
   // to generate a random int of certain range, it takes the length of
-  // the randint as an arguement
+  // the randint as an argument
     if (!checkType('number')) throw new TypeError('randint() requires numbers')
     return Math.floor(Math.random() * (10 ** digits))
   }
-  const choice = function choice (list) {
+  var choice = function choice (list) {
   // to chose randomly from an Array
-    if (!(list instanceof Array)) throw new TypeError('choice() taskes only Arrays')
-    if (list.length <= 0) throw new Error('choice() requires pupliated Array')
-    let powerOfLength = Math.floor(list.length / 10)
+    if (!(list instanceof Array)) throw new TypeError('choice() takes only Arrays')
+    if (list.length <= 0) throw new Error('choice() requires populated Array')
+    var powerOfLength = Math.floor(list.length / 10)
     if (powerOfLength <= 0) powerOfLength = 1
     return list[Math.floor(Math.random() * (10 * powerOfLength))]
   }
-  const effects = [
+  var effects = [
     // jquery ui effects
     'blind', 'bounce', 'clip',
     'drop', 'explode', 'fade',
@@ -56,19 +46,20 @@ const uniqueness = function Unique (options) {
     use_effects: options.use_effects || 'true', // to use transitional jquery UI effects
     effect: options.effect || choice(effects), // to get or set a random effect
     effect_duration: options.effect_duration * 1000 || randint(3), // effect duration in seconds. default random
-    local_url: options.local_url || 'false' // to goto() via parsing index varible from url
+    local_url: options.local_url || 'false', // to goto() via parsing index variable from url
+    always_hash: options.always_hash || 'false', // to always display the current element id in url
   }
-  this.turn = 0 // currently showen element
+  this.turn = 0 // currently shown element
   this.s_length = $(this.options.identifier).length // length of the selected elements
   this.m_length = this.s_length - 1 // length deducted for ease of use
-  this.onit = false // to indecate if any effects is on
+  this.onit = false // to indicate if any effects is on
 
   this.__init__ = function __init__ () {
     // initial function to check the options and selection validity.
     // check for jquery ui and its effects, if use effects
     if (this.options.use_effects === 'true' && !$.ui) throw new Error('Effects depends on Jquery ui, go get it. or do not use effects !')
     // check types
-    let bol; for (let b in bol = [
+    var bol; for (var b in bol = [
       this.options.use_effects,
       this.options.local_url]) {
       if (bol[b] !== 'true' && bol[b] !== 'false') throw new TypeError("unique(options) require 'true' or 'false'")
@@ -80,7 +71,7 @@ const uniqueness = function Unique (options) {
       this.options.effect_duration,
       this.options.start_with])) throw new TypeError('unique(options=effect_duration,start_with) requires number')
     if (this.options.start_with > this.m_length || this.options.start_with < 0) throw new Error('unique(start_with) requires a valid index number')
-    // hide the selected elements accourding to options
+    // hide the selected elements according to options
     var tempSelected = $(this.options.identifier)
     tempSelected = tempSelected.not($(this.options.identifier + ':eq(' + this.options.start_with + ')'))
     tempSelected.toggle()
@@ -91,9 +82,9 @@ const uniqueness = function Unique (options) {
   }
 
   this.effect = function effect (effect, duration, index, doe = true) {
-    // to applay the effect and toggle the element
+    // to apply the effect and toggle the element
     if (effects.indexOf(effect) === -1) {
-      throw new Error('effect(effect) taskes a valid jquery ui effect')
+      throw new Error('effect(effect) takes a valid jquery ui effect')
     } else {
       if (this.options.use_effects === 'true' && doe) {
         $(this.options.identifier + ':eq(' + index + ')').stop().toggle(effect, {}, duration)
@@ -113,27 +104,29 @@ const uniqueness = function Unique (options) {
     this.checkLength()
     if (!checkType('number', index)) throw new TypeError('goto() requires number')
     if (index > this.m_length || index < 0) throw new Error('goto() requires a valid index number')
-    // check if the element to be unhidden is actually hidden
+    // check if the element to be unbidden is actually hidden
     if (!this.onit) { // to prevent over lapping
       if ($(this.identifier + ':eq(' + this.turn + ')').css('display') !== 'none') {
         this.effect(this.options.effect, this.options.effect_duration, this.turn, false)
       } // to avoid first and last hide issues
       this.effect(this.options.effect, this.options.effect_duration, index)
       this.turn = index
-      this.timeit() // timeout indecator of end of effect
+      this.timeit() // timeout indicator of end of effect
     }
   }
+
   this.next = function next () {
     // to toggle the next element in selection
     this.checkLength()
     if (!this.onit) {
       this.effect(this.options.effect, this.options.effect_duration, this.turn, false)
-      if (this.turn >= this.m_length) this.turn = parseInt(-1) // weird behaviour without parseInt
+      if (this.turn >= this.m_length) this.turn = parseInt(-1) // weird behavior without parseInt
       this.turn += 1
       this.effect(this.options.effect, this.options.effect_duration, this.turn)
       this.timeit()
     }
   }
+
   this.back = function back () {
     // to toggle the previous element in selection
     if (!this.onit) {
@@ -147,8 +140,8 @@ const uniqueness = function Unique (options) {
   }
 
   this.localUrl = function localUrl () {
-    // spliting the href looking for our index and magic word unique
-    let url = window.location.href.split('#')
+    // splitting the href looking for our index and magic word unique
+    var url = window.location.href.split('#')
     if (url.length < 2) {
       return false
     } else { // it contains #
@@ -162,11 +155,20 @@ const uniqueness = function Unique (options) {
     }
   }
 
+  this.hashIt = function hashIt () {
+    // to add the hashed element ID to the url
+    var url = window.location.href.split('#')
+    var nextUrl = url[0] + '#unique' + this.turn
+    window.history.pushState(nextUrl.slice(1), nextUrl.slice(1), nextUrl)
+  }
+
   this.timeit = function timeit () {
-    // setting a timer out to prevent any overlapsing
-    this.onit = true // timeout indecator of end of effect
+    // setting a timer out to prevent any overlapping
+    this.onit = true // timeout indicator of end of effect
     setTimeout(function () {
       this.onit = false
+      if (this.options.always_hash === 'true') this.hashIt() // adding hash to url after effect's done
+      callback() // execute passed callback function 
     }, this.options.effect_duration)
   }
 
