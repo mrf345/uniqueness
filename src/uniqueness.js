@@ -1,4 +1,4 @@
-/* global $ */ // varible arguement to avoid false linter
+/* global $ */ // to avoid false linter
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -6,7 +6,7 @@
 
 */
 
-var uniqueness = function Unique (options, callback=function () {}) {
+var uniqueness = function Unique (options, callback=function (data) {}) {
   var checkType = function checkType (type, args) {
     // checking the type of each variable in the passed array
     for (var a in args) {
@@ -50,9 +50,10 @@ var uniqueness = function Unique (options, callback=function () {}) {
     always_hash: options.always_hash || 'false' // to always display the current element id in hash url
   }
   this.turn = 0 // currently shown element
+  this.preTurn = false // to store the previous turn
   this.s_length = $(this.options.identifier).length // length of the selected elements
   this.m_length = this.s_length - 1 // length deducted for ease of use
-  this.onit = false // to indicate if any effects is on
+  this.onIt = false // to indicate if any effects is on
 
   this.__init__ = function __init__ () {
     // initial function to check the options and selection validity.
@@ -79,6 +80,7 @@ var uniqueness = function Unique (options, callback=function () {}) {
     // lunching url parser if allowed and settling the first element
     if (this.options.local_url === 'true') this.turn = this.localUrl() || this.options.start_with
     else this.turn = this.options.start_with
+    callback(this.turn)
     return true
   }
 
@@ -106,37 +108,43 @@ var uniqueness = function Unique (options, callback=function () {}) {
     if (!checkType('number', index)) throw new TypeError('goto() requires number')
     if (index > this.m_length || index < 0) throw new Error('goto() requires a valid index number')
     // check if the element to be unbidden is actually hidden
-    if (!this.onit) { // to prevent over lapping
+    if (!this.onIt) { // to prevent over lapping
       if ($(this.identifier + ':eq(' + this.turn + ')').css('display') !== 'none') {
         this.effect(this.options.effect, this.options.effect_duration, this.turn, false)
       } // to avoid first and last hide issues
       this.effect(this.options.effect, this.options.effect_duration, index)
+      this.preTurn = this.turn
       this.turn = index
-      this.timeit() // timeout indicator of end of effect
+      this.timeIt() // timeout indicator of end of effect
+      callback(this.turn) // execute passed callback function 
     }
   }
 
   this.next = function next () {
     // to toggle the next element in selection
     this.checkLength()
-    if (!this.onit) {
+    if (!this.onIt) {
       this.effect(this.options.effect, this.options.effect_duration, this.turn, false)
       if (this.turn >= this.m_length) this.turn = parseInt(-1) // weird behavior without parseInt
+      this.preTurn = this.turn
       this.turn += 1
       this.effect(this.options.effect, this.options.effect_duration, this.turn)
-      this.timeit()
+      this.timeIt()
+      callback('next') // execute passed callback function 
     }
   }
 
   this.back = function back () {
     // to toggle the previous element in selection
-    if (!this.onit) {
+    if (!this.onIt) {
       this.checkLength()
       this.effect(this.options.effect, this.options.effect_duration, this.turn, false)
       if (this.turn < 0) this.turn = this.m_length
+      this.preTurn = this.turn
       this.turn -= 1
       this.effect(this.options.effect, this.options.effect_duration, this.turn)
-      this.timeit()
+      this.timeIt()
+      callback('back') // execute passed callback function 
     }
   }
 
@@ -159,17 +167,16 @@ var uniqueness = function Unique (options, callback=function () {}) {
   this.hashIt = function hashIt () {
     // to add the hashed element ID to the url
     var url = window.location.href.split('#')
-    var nextUrl = url[0] + '#unique' + this.turn
+    var nextUrl = url[0] + '#unique' + (this.turn === -1 ? this.m_length : this.turn)
     window.history.pushState(nextUrl.slice(1), nextUrl.slice(1), nextUrl)
   }
 
-  this.timeit = function timeit () {
+  this.timeIt = function timeIt () {
     // setting a timer out to prevent any overlapping
-    this.onit = true // timeout indicator of end of effect
+    this.onIt = true // timeout indicator of end of effect
     setTimeout(function () {
-      this.onit = false
+      this.onIt = false
       if (this.options.always_hash === 'true') this.hashIt() // adding hash to url after effect's done
-      callback() // execute passed callback function 
     }, this.options.effect_duration)
   }
 
@@ -177,8 +184,8 @@ var uniqueness = function Unique (options, callback=function () {}) {
     // logging selected elements with their index number or returning object of them
     if (!param) {
       $(this.options.identifier).each(function (k, v) {
-        console.table('Index : ' + k)
-        console.table('HTML : ' + v.innerHTML)
+        console.log('Index : ' + k)
+        console.log('HTML : ' + v.innerHTML)
         console.log('------------------')
       })
     } else {
