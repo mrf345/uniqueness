@@ -169,7 +169,6 @@ var uniqueness = function Unique (options, callback=function (data) {}) {
 
   uniquenessReturn.hashIt = function hashIt () {
     // to add the hashed element ID to the url
-    uniquenessReturn.options.special_url()
     var url = window.location.href.split('#')
     var nextUrl = url[0] + '#unique' + (uniquenessReturn.turn === -1 ? uniquenessReturn.m_length : uniquenessReturn.turn)
     window.history.pushState(nextUrl.slice(1), nextUrl.slice(1), nextUrl)
@@ -180,6 +179,7 @@ var uniqueness = function Unique (options, callback=function (data) {}) {
     uniquenessReturn.onIt = true // timeout indicator of end of effect
     setTimeout(function () {
       uniquenessReturn.onIt = false
+      uniquenessReturn.options.special_url()
       if (uniquenessReturn.options.always_hash === 'true') uniquenessReturn.hashIt() // adding hash to url after effect's done
     }, uniquenessReturn.options.effect_duration)
   }
