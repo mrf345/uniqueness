@@ -49,7 +49,8 @@ var uniqueness = function Unique (options, callback=function (data) {}) {
     effect: options.effect || choice(effects), // to get or set a random effect
     effect_duration: options.effect_duration * 1000 || randint(3), // effect duration in seconds. default random
     local_url: options.local_url || 'false', // to goto() via parsing index variable from url
-    always_hash: options.always_hash || 'false' // to always display the current element id in hash url
+    always_hash: options.always_hash || 'false', // to always display the current element id in hash url
+    special_url: options.special_url || function () {} // handler executed right before adding url hash
   }
   uniquenessReturn.turn = 0 // currently shown element
   uniquenessReturn.preTurn = false // to store the previous turn
@@ -168,6 +169,7 @@ var uniqueness = function Unique (options, callback=function (data) {}) {
 
   uniquenessReturn.hashIt = function hashIt () {
     // to add the hashed element ID to the url
+    uniquenessReturn.options.special_url()
     var url = window.location.href.split('#')
     var nextUrl = url[0] + '#unique' + (uniquenessReturn.turn === -1 ? uniquenessReturn.m_length : uniquenessReturn.turn)
     window.history.pushState(nextUrl.slice(1), nextUrl.slice(1), nextUrl)
